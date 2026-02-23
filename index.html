@@ -1,0 +1,1475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>三件好事 - 积极心理学实践</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        /* 头部区域 */
+        .header {
+            text-align: center;
+            color: white;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .date-display {
+            margin-top: 20px;
+            font-size: 1.2em;
+            background: rgba(255,255,255,0.2);
+            display: inline-block;
+            padding: 10px 25px;
+            border-radius: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        /* 心情评分区域 */
+        .mood-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .mood-container {
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .mood-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            padding: 15px;
+            border-radius: 15px;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .mood-item:hover {
+            background: #f0f0f0;
+            transform: scale(1.1);
+        }
+
+        .mood-item.selected {
+            background: linear-gradient(135deg, #667eea20, #764ba220);
+            border-color: #667eea;
+            transform: scale(1.15);
+        }
+
+        .mood-emoji {
+            font-size: 3em;
+            margin-bottom: 5px;
+        }
+
+        .mood-label {
+            font-size: 0.9em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .mood-item.selected .mood-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        .mood-score-display {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1em;
+            color: #667eea;
+            font-weight: 600;
+            min-height: 30px;
+        }
+
+        /* 照片上传区域 */
+        .photo-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .photo-upload-wrapper {
+            position: relative;
+        }
+
+        .photo-upload-area {
+            border: 3px dashed #ddd;
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #fafafa;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .photo-upload-area:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+        }
+
+        .photo-upload-area.has-photo {
+            border-style: solid;
+            border-color: #48bb78;
+            background: #f0fff4;
+            padding: 20px;
+        }
+
+        .upload-icon {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #999;
+        }
+
+        .photo-upload-area:hover .upload-icon {
+            color: #667eea;
+        }
+
+        .upload-text {
+            color: #666;
+            font-size: 1em;
+            font-weight: 500;
+        }
+
+        .upload-hint {
+            color: #999;
+            font-size: 0.85em;
+            margin-top: 5px;
+        }
+
+        #photoInput {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+            z-index: 10;
+        }
+
+        .photo-preview-container {
+            position: relative;
+            display: inline-block;
+            max-width: 100%;
+        }
+
+        .photo-preview {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: 10px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+            display: block;
+        }
+
+        .photo-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .btn-small {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s;
+            position: relative;
+            z-index: 20;
+        }
+
+        .btn-change {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-remove {
+            background: #fee;
+            color: #e53e3e;
+        }
+
+        /* 输入区域 */
+        .input-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .good-thing-item {
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            border-left: 4px solid #667eea;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .good-thing-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.2);
+        }
+
+        .item-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .item-label {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            resize: vertical;
+            min-height: 80px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .reason-input {
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        .reason-input textarea {
+            min-height: 60px;
+            background: #fafafa;
+        }
+
+        /* AI 评分区域 */
+        .ai-score-section {
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 20px;
+            border: 2px solid #667eea30;
+            display: none;
+        }
+
+        .ai-score-section.show {
+            display: block;
+            animation: fadeIn 0.5s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .score-display {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 15px;
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.3);
+            position: relative;
+        }
+
+        .score-number {
+            font-size: 3em;
+            font-weight: bold;
+            color: white;
+        }
+
+        .score-label {
+            color: #667eea;
+            font-size: 1.1em;
+            font-weight: 600;
+        }
+
+        .score-reason, .score-suggestion {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.05);
+        }
+
+        .score-reason h4, .score-suggestion h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .score-reason p, .score-suggestion p {
+            color: #555;
+            line-height: 1.8;
+            font-size: 0.95em;
+        }
+
+        /* 保存按钮 */
+        .save-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.2em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .save-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+        }
+
+        .save-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* 历史记录 */
+        .history-section {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #f0f0f0;
+        }
+
+        .history-title {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .stats {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.9em;
+        }
+
+        .history-item {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #48bb78;
+            animation: slideIn 0.5s ease;
+            position: relative;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .history-date {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .history-mood {
+            font-size: 1.5em;
+        }
+
+        .history-score {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 3px 12px;
+            border-radius: 15px;
+            font-size: 0.85em;
+        }
+
+        .history-photo {
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .history-photo img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        .history-photo img:hover {
+            transform: scale(1.02);
+        }
+
+        .history-content {
+            color: #555;
+            line-height: 1.8;
+        }
+
+        .history-content strong {
+            color: #333;
+        }
+
+        .history-ai-feedback {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 15px;
+            border-left: 3px solid #667eea;
+        }
+
+        .history-ai-feedback h5 {
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+        }
+
+        .history-ai-feedback p {
+            font-size: 0.9em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .share-btn-small {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border: 2px solid #667eea;
+            color: #667eea;
+            padding: 5px 15px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.85em;
+            transition: all 0.3s;
+        }
+
+        .share-btn-small:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #999;
+        }
+
+        .empty-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        /* 分享弹窗 */
+        .share-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .share-modal.show {
+            display: flex;
+        }
+
+        .share-content {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: modalIn 0.3s ease;
+        }
+
+        @keyframes modalIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .share-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .share-title {
+            font-size: 1.5em;
+            color: #333;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5em;
+            cursor: pointer;
+            color: #999;
+        }
+
+        .share-preview {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+        }
+
+        .share-preview-date {
+            color: #667eea;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .share-preview-mood {
+            font-size: 2em;
+            margin-bottom: 10px;
+        }
+
+        .share-preview-content {
+            color: #555;
+            line-height: 1.6;
+            font-size: 0.95em;
+        }
+
+        .share-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .share-option {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .share-option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateY(-3px);
+        }
+
+        .share-icon {
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        .share-label {
+            font-size: 0.85em;
+            color: #666;
+        }
+
+        .share-link-box {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .share-link-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 0.9em;
+        }
+
+        .copy-btn {
+            padding: 12px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        /* 提示 */
+        .toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+            z-index: 3000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            background: #e53e3e;
+        }
+
+        /* 使用说明 */
+        .guide-section {
+            background: white;
+            border-radius: 20px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        }
+
+        .guide-title {
+            font-size: 1.2em;
+            color: #333;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .guide-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .guide-step {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            border-left: 3px solid #667eea;
+        }
+
+        .guide-step-number {
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background: #667eea;
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 24px;
+            font-size: 0.85em;
+            margin-bottom: 8px;
+        }
+
+        .guide-step p {
+            color: #555;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        /* 响应式 */
+        @media (max-width: 600px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .mood-emoji {
+                font-size: 2em;
+            }
+            
+            .share-options {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .score-circle {
+                width: 100px;
+                height: 100px;
+            }
+
+            .score-number {
+                font-size: 2.5em;
+            }
+
+            .guide-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🌟 三件好事</h1>
+            <p>每天记录三件让你开心或感恩的小事<br>坚持21天，培养积极心态</p>
+            <div class="date-display" id="currentDate"></div>
+        </div>
+
+        <!-- 使用说明 -->
+        <div class="guide-section">
+            <div class="guide-title">📖 使用指南</div>
+            <div class="guide-steps">
+                <div class="guide-step">
+                    <div class="guide-step-number">1</div>
+                    <p>选择今日心情评分，记录当下的情绪状态</p>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-number">2</div>
+                    <p>上传一张今天拍摄的照片（可选）</p>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-number">3</div>
+                    <p>写下三件让你开心或感恩的小事</p>
+                </div>
+                <div class="guide-step">
+                    <div class="guide-step-number">4</div>
+                    <p>点击"智能分析"，获得 AI 评分和建议</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 心情评分 -->
+        <div class="mood-section">
+            <div class="section-title">😊 今日心情如何？</div>
+            <div class="mood-container">
+                <div class="mood-item" data-score="1" onclick="selectMood(1)">
+                    <div class="mood-emoji">😢</div>
+                    <div class="mood-label">很低落</div>
+                </div>
+                <div class="mood-item" data-score="2" onclick="selectMood(2)">
+                    <div class="mood-emoji">😕</div>
+                    <div class="mood-label">有点糟</div>
+                </div>
+                <div class="mood-item" data-score="3" onclick="selectMood(3)">
+                    <div class="mood-emoji">😐</div>
+                    <div class="mood-label">一般般</div>
+                </div>
+                <div class="mood-item" data-score="4" onclick="selectMood(4)">
+                    <div class="mood-emoji">🙂</div>
+                    <div class="mood-label">还不错</div>
+                </div>
+                <div class="mood-item" data-score="5" onclick="selectMood(5)">
+                    <div class="mood-emoji">😄</div>
+                    <div class="mood-label">超开心</div>
+                </div>
+            </div>
+            <div class="mood-score-display" id="moodDisplay"></div>
+        </div>
+
+        <!-- 照片上传 -->
+        <div class="photo-section">
+            <div class="section-title">📸 记录美好瞬间（可选）</div>
+            <div class="photo-upload-wrapper">
+                <div class="photo-upload-area" id="uploadArea">
+                    <input type="file" id="photoInput" accept="image/*" onchange="handlePhotoUpload(event)">
+                    <div class="upload-content" id="uploadContent">
+                        <div class="upload-icon">📷</div>
+                        <div class="upload-text">点击或拖拽上传照片</div>
+                        <div class="upload-hint">支持 JPG、PNG 格式，最大 5MB</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 三件好事输入 -->
+        <div class="input-section">
+            <div class="good-thing-item">
+                <div class="item-number">1</div>
+                <div class="item-label">今天发生了什么好事？</div>
+                <textarea id="thing1" placeholder="例如：今天吃到了很美味的早餐..."></textarea>
+                <div class="reason-input">
+                    <textarea id="reason1" placeholder="为什么会发生这件好事？（可选，但有助于提高评分）"></textarea>
+                </div>
+            </div>
+
+            <div class="good-thing-item">
+                <div class="item-number">2</div>
+                <div class="item-label">第二件好事：</div>
+                <textarea id="thing2" placeholder="例如：同事夸我的新发型很好看..."></textarea>
+                <div class="reason-input">
+                    <textarea id="reason2" placeholder="为什么会发生这件好事？（可选）"></textarea>
+                </div>
+            </div>
+
+            <div class="good-thing-item">
+                <div class="item-number">3</div>
+                <div class="item-label">第三件好事：</div>
+                <textarea id="thing3" placeholder="例如：傍晚看到了很美的晚霞..."></textarea>
+                <div class="reason-input">
+                    <textarea id="reason3" placeholder="为什么会发生这件好事？（可选）"></textarea>
+                </div>
+            </div>
+
+            <button class="save-btn" id="saveBtn" onclick="analyzeAndSave()">✨ 智能分析并保存</button>
+        </div>
+
+        <!-- AI 评分区域 -->
+        <div class="ai-score-section" id="aiScoreSection">
+            <div class="section-title">🎯 AI 积极指数评分</div>
+            <div class="score-display">
+                <div class="score-circle">
+                    <div class="score-number" id="scoreNumber">-</div>
+                </div>
+                <div class="score-label" id="scoreLabel">等待评分...</div>
+            </div>
+            <div class="score-reason">
+                <h4>📊 评分理由</h4>
+                <p id="scoreReason">完成记录后将为您生成详细分析...</p>
+            </div>
+            <div class="score-suggestion">
+                <h4>💡 积极建议</h4>
+                <p id="scoreSuggestion">完成记录后将为您生成个性化建议...</p>
+            </div>
+        </div>
+
+        <!-- 历史记录 -->
+        <div class="history-section">
+            <div class="history-header">
+                <div class="history-title">📚 我的幸福档案</div>
+                <div class="stats" id="stats">已记录 0 天</div>
+            </div>
+            <div id="historyList">
+                <div class="empty-state">
+                    <div class="empty-icon">📝</div>
+                    <div>还没有记录，开始写下今天的第一件好事吧！</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 分享弹窗 -->
+    <div class="share-modal" id="shareModal">
+        <div class="share-content">
+            <div class="share-header">
+                <div class="share-title">📤 分享我的幸福</div>
+                <button class="close-btn" onclick="closeShareModal()">×</button>
+            </div>
+            
+            <div class="share-preview" id="sharePreview"></div>
+
+            <div style="margin-bottom: 10px; color: #666; font-size: 0.9em;">选择分享方式：</div>
+            <div class="share-options">
+                <div class="share-option" onclick="shareToWeChat()">
+                    <div class="share-icon">💬</div>
+                    <div class="share-label">微信</div>
+                </div>
+                <div class="share-option" onclick="shareToWeibo()">
+                    <div class="share-icon">📱</div>
+                    <div class="share-label">微博</div>
+                </div>
+                <div class="share-option" onclick="shareToQQ()">
+                    <div class="share-icon">🐧</div>
+                    <div class="share-label">QQ</div>
+                </div>
+                <div class="share-option" onclick="downloadImage()">
+                    <div class="share-icon">🖼️</div>
+                    <div class="share-label">保存图片</div>
+                </div>
+                <div class="share-option" onclick="copyText()">
+                    <div class="share-icon">📋</div>
+                    <div class="share-label">复制文字</div>
+                </div>
+                <div class="share-option" onclick="shareNative()">
+                    <div class="share-icon">🔗</div>
+                    <div class="share-label">更多</div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #eee;">
+                <div style="color: #666; font-size: 0.9em; margin-bottom: 10px;">或复制链接分享：</div>
+                <div class="share-link-box">
+                    <input type="text" class="share-link-input" id="shareLink" readonly>
+                    <button class="copy-btn" onclick="copyLink()">复制</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // 全局变量
+        let currentMood = 0;
+        let currentPhoto = null;
+        let currentShareEntry = null;
+        let currentAnalysis = null;
+
+        const moodEmojis = { 1: '😢', 2: '😕', 3: '😐', 4: '🙂', 5: '😄' };
+        const moodLabels = { 1: '很低落', 2: '有点糟', 3: '一般般', 4: '还不错', 5: '超开心' };
+
+        // 设置日期
+        function setCurrentDate() {
+            const date = new Date();
+            const options = { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' };
+            document.getElementById('currentDate').textContent = date.toLocaleDateString('zh-CN', options);
+        }
+
+        // 选择心情
+        function selectMood(score) {
+            currentMood = score;
+            document.querySelectorAll('.mood-item').forEach(item => item.classList.remove('selected'));
+            document.querySelector(`[data-score="${score}"]`).classList.add('selected');
+            document.getElementById('moodDisplay').textContent = `今日心情：${moodLabels[score]} ${moodEmojis[score]}`;
+        }
+
+        // 照片上传处理
+        function handlePhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (!file.type.startsWith('image/')) {
+                showToast('请上传图片文件（JPG/PNG）', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            if (file.size > 5 * 1024 * 1024) {
+                showToast('图片大小不能超过 5MB', 'error');
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                currentPhoto = e.target.result;
+                displayPhotoPreview();
+                showToast('✅ 照片上传成功！');
+            };
+            
+            reader.onerror = function() {
+                showToast('照片读取失败，请重试', 'error');
+                event.target.value = '';
+            };
+            
+            reader.readAsDataURL(file);
+        }
+
+        // 显示照片预览
+        function displayPhotoPreview() {
+            const uploadArea = document.getElementById('uploadArea');
+            const uploadContent = document.getElementById('uploadContent');
+            
+            uploadArea.classList.add('has-photo');
+            uploadContent.innerHTML = `
+                <div class="photo-preview-container">
+                    <img src="${currentPhoto}" class="photo-preview" alt="照片预览">
+                </div>
+                <div class="photo-actions">
+                    <button class="btn-small btn-change" onclick="changePhoto(event)">更换照片</button>
+                    <button class="btn-small btn-remove" onclick="removePhoto(event)">删除</button>
+                </div>
+            `;
+        }
+
+        // 更换照片
+        function changePhoto(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            document.getElementById('photoInput').click();
+        }
+
+        // 删除照片
+        function removePhoto(event) {
+            event.stopPropagation();
+            event.preventDefault();
+            
+            currentPhoto = null;
+            document.getElementById('photoInput').value = '';
+            
+            const uploadArea = document.getElementById('uploadArea');
+            const uploadContent = document.getElementById('uploadContent');
+            
+            uploadArea.classList.remove('has-photo');
+            uploadContent.innerHTML = `
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">点击或拖拽上传照片</div>
+                <div class="upload-hint">支持 JPG、PNG 格式，最大 5MB</div>
+            `;
+            
+            showToast('照片已删除');
+        }
+
+        // 拖拽上传支持
+        document.addEventListener('DOMContentLoaded', function() {
+            const uploadArea = document.getElementById('uploadArea');
+            
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.style.borderColor = '#667eea';
+                uploadArea.style.background = '#f0f4ff';
+            });
+            
+            uploadArea.addEventListener('dragleave', (e) => {
+                e.preventDefault();
+                if (!uploadArea.classList.contains('has-photo')) {
+                    uploadArea.style.borderColor = '#ddd';
+                    uploadArea.style.background = '#fafafa';
+                }
+            });
+            
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                if (!uploadArea.classList.contains('has-photo')) {
+                    uploadArea.style.borderColor = '#ddd';
+                    uploadArea.style.background = '#fafafa';
+                }
+                
+                const files = e.dataTransfer.files;
+                if (files.length > 0) {
+                    const file = files[0];
+                    if (file.type.startsWith('image/')) {
+                        const reader = new FileReader();
+                        reader.onload = function(evt) {
+                            currentPhoto = evt.target.result;
+                            displayPhotoPreview();
+                            showToast('✅ 照片上传成功！');
+                        };
+                        reader.readAsDataURL(file);
+                    } else {
+                        showToast('请上传图片文件', 'error');
+                    }
+                }
+            });
+        });
+
+        // AI 分析函数
+        function analyzeContent(things, reasons, mood) {
+            let score = 6;
+            let scoreFactors = [];
+            let suggestions = [];
+
+            const validReasons = reasons.filter(r => r.trim().length > 0);
+            if (validReasons.length >= 3) {
+                score += 2;
+                scoreFactors.push('你对每件好事都有深入的归因反思');
+            } else if (validReasons.length >= 1) {
+                score += 1;
+                scoreFactors.push('你尝试分析了好事发生的原因');
+            }
+
+            const totalLength = things.reduce((sum, t) => sum + t.length, 0);
+            if (totalLength > 100) {
+                score += 1;
+                scoreFactors.push('描述详细具体，善于观察生活细节');
+            }
+
+            if (mood >= 4 && things.some(t => t.includes('开心') || t.includes('快乐') || t.includes('感谢'))) {
+                score += 1;
+                scoreFactors.push('情绪状态与记录内容积极一致');
+            }
+
+            const categories = {
+                work: /工作|同事|项目|任务|学习/i,
+                relationship: /朋友|家人|同学|老师|帮助/i,
+                health: /运动|健康|睡眠|身体/i,
+                nature: /天气|阳光|风景|花|树/i,
+                food: /吃|美食|早餐|午餐|晚餐/i,
+                self: /自己|完成|做到|坚持/i
+            };
+            
+            let categoryCount = 0;
+            const allText = things.join(' ');
+            for (let cat in categories) {
+                if (categories[cat].test(allText)) categoryCount++;
+            }
+            if (categoryCount >= 3) {
+                score += 1;
+                scoreFactors.push('好事来源多样，生活维度丰富');
+            }
+
+            score = Math.min(10, Math.max(1, score));
+
+            if (validReasons.length < 2) {
+                suggestions.push('试着分析更多好事发生的原因，这能帮助你发现生活中的积极模式');
+            }
+            if (categoryCount < 2) {
+                suggestions.push('尝试关注不同领域的好事（工作、关系、健康等），让积极情绪来源更丰富');
+            }
+            if (mood <= 2) {
+                suggestions.push('即使今天心情低落，你依然坚持记录，这本身就是巨大的勇气。建议关注微小但确定的美好');
+            } else if (score >= 8) {
+                suggestions.push('你的积极觉察力很棒！建议把这份觉察分享给身边的人，传递正能量');
+            } else {
+                suggestions.push('继续保持记录习惯，21天后你会发现自己对美好的敏感度显著提升');
+            }
+
+            let reasonText = `你的积极指数为 ${score}/10 分。`;
+            if (scoreFactors.length > 0) {
+                reasonText += '评分亮点：' + scoreFactors.join('；') + '。';
+            } else {
+                reasonText += '建议更详细地描述好事的具体细节，并思考它们发生的原因。';
+            }
+
+            return {
+                score: score,
+                reason: reasonText,
+                suggestion: suggestions.join('。') + '。'
+            };
+        }
+
+        // 分析并保存
+        function analyzeAndSave() {
+            if (currentMood === 0) {
+                showToast('请先选择今日心情评分', 'error');
+                return;
+            }
+
+            const thing1 = document.getElementById('thing1').value.trim();
+            const thing2 = document.getElementById('thing2').value.trim();
+            const thing3 = document.getElementById('thing3').value.trim();
+
+            if (!thing1 || !thing2 || !thing3) {
+                showToast('请填写三件好事后再保存', 'error');
+                return;
+            }
+
+            const things = [thing1, thing2, thing3];
+            const reasons = [
+                document.getElementById('reason1').value.trim(),
+                document.getElementById('reason2').value.trim(),
+                document.getElementById('reason3').value.trim()
+            ];
+
+            const aiSection = document.getElementById('aiScoreSection');
+            aiSection.classList.add('show');
+
+            document.getElementById('scoreNumber').textContent = '...';
+            document.getElementById('scoreLabel').textContent = '正在分析...';
+            document.getElementById('scoreReason').textContent = 'AI 正在评估你的积极指数，请稍候...';
+            document.getElementById('scoreSuggestion').textContent = '生成个性化建议中...';
+
+            setTimeout(() => {
+                const analysis = analyzeContent(things, reasons, currentMood);
+                currentAnalysis = analysis;
+
+                animateScore(analysis.score);
+                
+                document.getElementById('scoreLabel').textContent = analysis.score >= 8 ? '积极指数优秀！' : 
+                                                                    analysis.score >= 6 ? '积极指数良好' : '继续加油！';
+                document.getElementById('scoreReason').textContent = analysis.reason;
+                document.getElementById('scoreSuggestion').textContent = analysis.suggestion;
+
+                saveEntry(things, reasons, analysis);
+            }, 1500);
+        }
+
+        // 分数动画
+        function animateScore(targetScore) {
+            const element = document.getElementById('scoreNumber');
+            let current = 0;
+            const interval = setInterval(() => {
+                current++;
+                element.textContent = current;
+                if (current >= targetScore) {
+                    clearInterval(interval);
+                    if (targetScore === 10) {
+                        element.style.animation = 'pulse 0.5s ease 3';
+                    }
+                }
+            }, 100);
+        }
+
+        // 保存记录
+        function saveEntry(things, reasons, analysis) {
+            const entry = {
+                id: Date.now(),
+                date: new Date().toLocaleDateString('zh-CN', { 
+                    year: 'numeric', 
+                    month: 'long', 
+                    day: 'numeric', 
+                    weekday: 'long' 
+                }),
+                timestamp: new Date().getTime(),
+                mood: currentMood,
+                photo: currentPhoto,
+                things: things.map((t, i) => ({ text: t, reason: reasons[i] })),
+                analysis: analysis
+            };
+
+            const history = JSON.parse(localStorage.getItem('goodThings') || '[]');
+            const today = new Date().toLocaleDateString('zh-CN');
+            const existingIndex = history.findIndex(h => h.date.includes(today));
+            
+            if (existingIndex >= 0) {
+                history[existingIndex] = entry;
+            } else {
+                history.push(entry);
+            }
+            
+            localStorage.setItem('goodThings', JSON.stringify(history));
+
+            resetForm();
+            updateHistoryDisplay(history);
+            updateStats(history);
+            
+            showToast(`✅ 保存成功！积极指数：${analysis.score}/10`);
+        }
+
+        // 重置表单
+        function resetForm() {
+            currentMood = 0;
+            currentPhoto = null;
+            currentAnalysis = null;
+            
+            document.querySelectorAll('.mood-item').forEach(item => item.classList.remove('selected'));
+            document.getElementById('moodDisplay').textContent = '';
+            
+            const uploadArea = document.getElementById('uploadArea');
+            const uploadContent = document.getElementById('uploadContent');
+            uploadArea.classList.remove('has-photo');
+            uploadContent.innerHTML = `
+                <div class="upload-icon">📷</div>
+                <div class="upload-text">点击或拖拽上传照片</div>
+                <div class="upload-hint">支持 JPG、PNG 格式，最大 5MB</div>
+            `;
+            document.getElementById('photoInput').value = '';
+            
+            document.getElementById('thing1').value = '';
+            document.getElementById('thing2').value = '';
+            document.getElementById('thing3').value = '';
+            document.getElementById('reason1').value = '';
+            document.getElementById('reason2').value = '';
+            document.getElementById('reason3').value = '';
+            
+            setTimeout(() => {
+                document.getElementById('aiScoreSection').classList.remove('show');
+            }, 3000);
+        }
+
+        // 更新统计显示
+        function updateStats(history) {
+            document.getElementById('stats').textContent = `已记录 ${history.length} 天`;
+        }
+
+        // 更新历史显示
+        function updateHistoryDisplay(history) {
+            const historyList = document.getElementById('historyList');
+            
+            if (history.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-icon">📝</div>
+                        <div>还没有记录，开始写下今天的第一件好事吧！</div>
+                    </div>
+                `;
+                return;
+            }
+
+            historyList.innerHTML = history.sort((a, b) => b.timestamp - a.timestamp).map(entry => `
+                <div class="history-item">
+                    <button class="share-btn-small" onclick="openShareModal(${entry.id})">分享</button>
+                    <div class="history-date">
+                        ${entry.date}
+                        <span class="history-mood">${moodEmojis[entry.mood]}</span>
+                        ${entry.analysis ? `<span class="history-score">积极指数 ${entry.analysis.score}/10</span>` : ''}
+                    </div>
+                    ${entry.photo ? `
+                        <div class="history-photo">
+                            <img src="${entry.photo}" alt="记录照片" onclick="window.open('${entry.photo}')">
+                        </div>
+                    ` : ''}
+                    <div class="history-content">
+                        <strong>1.</strong> ${entry.things[0].text} ${entry.things[0].reason ? `<br><small style="color:#667eea">原因：${entry.things[0].reason}</small>` : ''}<br>
+                        <strong>2.</strong> ${entry.things[1].text} ${entry.things[1].reason ? `<br><small style="color:#667eea">原因：${entry.things[1].reason}</small>` : ''}<br>
+                        <strong>3.</strong> ${entry.things[2].text} ${entry.things[2].reason ? `<br><small style="color:#667eea">原因：${entry.things[2].reason}</small>` : ''}
+                    </div>
+                    ${entry.analysis ? `
+                        <div class="history-ai-feedback">
+                            <h5>💡 AI 建议</h5>
+                            <p>${entry.analysis.suggestion}</p>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 分享功能
+        function openShareModal(entryId) {
+            const history = JSON.parse(localStorage.getItem('goodThings') || '[]');
+            currentShareEntry = history.find(h => h.id === entryId);
+            if (!currentShareEntry) return;
+
+            const preview = document.getElementById('sharePreview');
+            preview.innerHTML = `
+                <div class="share-preview-date">${currentShareEntry.date} ${moodEmojis[currentShareEntry.mood]}</div>
+                ${currentShareEntry.analysis ? `<div style="color:#667eea;font-weight:600;margin-bottom:10px;">积极指数：${currentShareEntry.analysis.score}/10</div>` : ''}
+                <div class="share-preview-content">
+                    <strong>今日三件好事：</strong><br>
+                    1️⃣ ${currentShareEntry.things[0].text}<br>
+                    2️⃣ ${currentShareEntry.things[1].text}<br>
+                    3️⃣ ${currentShareEntry.things[2].text}<br><br>
+                    <em>来自：三件好事 - 积极心理学实践</em>
+                </div>
+            `;
+
+            document.getElementById('shareLink').value = `https://3goodthings.app/share/${entryId}`;
+            document.getElementById('shareModal').classList.add('show');
+        }
+
+        function closeShareModal() {
+            document.getElementById('shareModal').classList.remove('show');
+            currentShareEntry = null;
+        }
+
+        function shareToWeChat() { showToast('请截图分享到微信朋友圈'); }
+        function shareToWeibo() {
+            if (!currentShareEntry) return;
+            const text = `今天记录了三件好事，积极指数${currentShareEntry.analysis?.score || '8'}/10！${currentShareEntry.things.map((t, i) => `${i+1}.${t.text}`).join(' ')} #三件好事 #积极心理学`;
+            window.open(`https://service.weibo.com/share/share.php?title=${encodeURIComponent(text)}`, '_blank');
+        }
+        function shareToQQ() {
+            if (!currentShareEntry) return;
+            const text = `今天记录了三件好事，心情${moodLabels[currentShareEntry.mood]}！`;
+            window.open(`https://connect.qq.com/widget/shareqq/index.html?title=${encodeURIComponent(text)}`, '_blank');
+        }
+        function downloadImage() { showToast('请直接截图保存为图片'); }
+        function copyText() {
+            if (!currentShareEntry) return;
+            const text = `${currentShareEntry.date} 心情：${moodLabels[currentShareEntry.mood]} ${currentShareEntry.analysis ? `积极指数：${currentShareEntry.analysis.score}/10` : ''}\n\n今日三件好事：\n1. ${currentShareEntry.things[0].text}\n2. ${currentShareEntry.things[1].text}\n3. ${currentShareEntry.things[2].text}\n\n${currentShareEntry.analysis ? `AI建议：${currentShareEntry.analysis.suggestion}` : ''}\n\n来自：三件好事 - 积极心理学实践`;
+            navigator.clipboard.writeText(text).then(() => showToast('✅ 文字已复制'));
+        }
+        function shareNative() {
+            if (navigator.share) {
+                navigator.share({
+                    title: '三件好事',
+                    text: `今天记录了三件好事，心情${currentShareEntry ? moodLabels[currentShareEntry.mood] : '不错'}！`,
+                    url: window.location.href
+                }).catch(() => showToast('分享取消'));
+            } else {
+                showToast('您的浏览器不支持原生分享');
+            }
+        }
+        function copyLink() {
+            navigator.clipboard.writeText(document.getElementById('shareLink').value).then(() => showToast('✅ 链接已复制'));
+        }
+
+        // 显示提示
+        function showToast(message, type = 'success') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show' + (type === 'error' ? ' error' : '');
+            setTimeout(() => toast.classList.remove('show'), 3000);
+        }
+
+        // 点击弹窗外部关闭
+        document.getElementById('shareModal').addEventListener('click', function(e) {
+            if (e.target === this) closeShareModal();
+        });
+
+        // 初始化
+        setCurrentDate();
+        const history = JSON.parse(localStorage.getItem('goodThings') || '[]');
+        updateHistoryDisplay(history);
+        updateStats(history);
+    </script>
+
+</body>
+</html>
